@@ -1,4 +1,4 @@
-# Estágio 1: Build da aplicaçãoo
+# Estágio 1: Build da aplicação
 FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine AS build
 WORKDIR /app
 
