@@ -4,7 +4,7 @@ WORKDIR /src
 
 # 1. Copiar a Shared primeiro (Crucial para o compilador achar a referência)
 # Mantemos a Shared na raiz para bater com o caminho relativo ../
-COPY ["./FCG.Shared/FCG.Shared.csproj", "FCG.Shared/"]
+COPY ["FCG.Shared/FCG.Shared.csproj", "FCG.Shared/"]
 
 # 2. Copiar os projetos do Users-Service
 COPY ["src/FCG.Users.API/FCG.Users.API.csproj", "FCG-Users-Service/src/FCG.Users.API/"]
