@@ -9,10 +9,9 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    # IMPORTANTE: Garanta que o job tenha permissão de leitura para pacotes
     permissions:
       contents: read
-      packages: read
+      packages: read # Essencial para ler o FCG.Shared
 
     steps:
       - uses: actions/checkout@v4
@@ -21,14 +20,16 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9.0.x"
-          # Adicione esta linha com o seu usuário 'dokatec'
+          # Define a fonte para o setup-dotnet configurar o arquivo de credenciais
           source-url: https://nuget.pkg.github.com/dokatec/index.json
         env:
-          # O GitHub usa este token automático para autenticar no seu NuGet privado
+          # Injeta o token aqui para o Setup configurar o ambiente
           NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Restore dependencies
-        # Agora o restore terá a credencial configurada pelo setup-dotnet acima
+        # Injeta o token novamente aqui para garantir que o processo 'dotnet' o veja
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: dotnet restore
 
       - name: Build
