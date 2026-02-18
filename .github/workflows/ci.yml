@@ -1,39 +1,40 @@
-name: CI - FIAP Cloud Games
+name: CI - Build and Test
 
 on:
-  push:
-    branches: [main, develop]
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read # Essencial para ler o FCG.Shared
+      packages: read # Permissão para ler pacotes privados
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do Código
+        uses: actions/checkout@v4
 
-      - name: Setup .NET 9
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "9.0.x"
-          # Define a fonte para o setup-dotnet configurar o arquivo de credenciais
-          source-url: https://nuget.pkg.github.com/dokatec/index.json
-        env:
-          # Injeta o token aqui para o Setup configurar o ambiente
-          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+          dotnet-version: 8.0.x
+
+      - name: Configurar NuGet para GitHub Packages
+        run: |
+          dotnet nuget add source "https://nuget.pkg.github.com/dokatec/index.json" \
+            --name github \
+            --username dokatec \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --store-password-in-clear-text
 
       - name: Restore dependencies
-        # Injeta o token novamente aqui para garantir que o processo 'dotnet' o veja
-        env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
-        run: dotnet restore
+        run: dotnet restore FCG-Users.sln
 
       - name: Build
-        run: dotnet build --no-restore -c Release
+        run: dotnet build FCG-Users.sln --no-restore --configuration Release
 
-      - name: Test
-        run: dotnet test --no-build -c Release --verbosity normal
+      - name: Run tests
+        run: dotnet test FCG-Users.sln --no-build --configuration Release
