@@ -24,12 +24,12 @@ jobs:
           source-url: https://nuget.pkg.github.com/dokatec/index.json
         env:
           # Injeta o token aqui para o Setup configurar o ambiente
-          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
 
       - name: Restore dependencies
         # Injeta o token novamente aqui para garantir que o processo 'dotnet' o veja
         env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUGET_AUTH_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
         run: dotnet restore
 
       - name: Build
