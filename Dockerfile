@@ -7,10 +7,10 @@ WORKDIR /src
 COPY ["FCG.Shared/FCG.Shared.csproj", "FCG.Shared/"]
 
 # 2. Copiar os projetos do Users-Service
-COPY ["src/FCG.Users.API/FCG.Users.API.csproj", "FCG-Users-Service/src/FCG.Users.API/"]
-COPY ["src/FCG.Users.Application/FCG.Users.Application.csproj", "FCG-Users-Service/src/FCG.Users.Application/"]
-COPY ["src/FCG.Users.Domain/FCG.Users.Domain.csproj", "FCG-Users-Service/src/FCG.Users.Domain/"]
-COPY ["src/FCG.Users.Infrastructure/FCG.Users.Infrastructure.csproj", "FCG-Users-Service/src/FCG.Users.Infrastructure/"]
+COPY ["FCG-Users-Service/src/FCG.Users.API/FCG.Users.API.csproj", "FCG-Users-Service/src/FCG.Users.API/"]
+COPY ["FCG-Users-Service/src/FCG.Users.Application/FCG.Users.Application.csproj", "FCG-Users-Service/src/FCG.Users.Application/"]
+COPY ["FCG-Users-Service/src/FCG.Users.Domain/FCG.Users.Domain.csproj", "FCG-Users-Service/src/FCG.Users.Domain/"]
+COPY ["FCG-Users-Service/src/FCG.Users.Infrastructure/FCG.Users.Infrastructure.csproj", "FCG-Users-Service/src/FCG.Users.Infrastructure/"]
 
 # Restore usando o caminho da API
 RUN dotnet restore "FCG-Users-Service/src/FCG.Users.API/FCG.Users.API.csproj"
@@ -19,8 +19,8 @@ RUN dotnet restore "FCG-Users-Service/src/FCG.Users.API/FCG.Users.API.csproj"
 COPY . .
 
 # Mudar para a pasta da API para o Build
-WORKDIR "/src/FCG-Users-Service/src/FCG.Users.API"
-RUN dotnet build "FCG.Users.API.csproj" -c Release -o /app/build
+WORKDIR "/FCG-Users-Service/src/FCG.Users.API"
+RUN dotnet build "FCG-Users-Service/src/FCG.Users.API/FCG.Users.API.csproj" -c Release -o /app/build
 
 # Publicação
 FROM build AS publish
