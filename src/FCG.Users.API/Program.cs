@@ -34,7 +34,9 @@ builder.Services.AddMassTransit(x =>
     // O MassTransit precisa saber que ele é um "Bus" que usa RabbitMQ
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        var host = builder.Configuration["MessageBroker:Host"] ?? "localhost";
+
+        cfg.Host(host, "/", h =>
         {
             h.Username("guest");
             h.Password("guest");
