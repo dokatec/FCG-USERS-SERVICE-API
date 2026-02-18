@@ -112,6 +112,42 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// --- INÍCIO DO BLOCO DE AUTO-MIGRATION ---
+// No Program.cs, após o var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+
+    // Tenta aplicar a migration com política de retry simples
+    for (int i = 0; i < 5; i++)
+    {
+        try
+        {
+            var context = services.GetRequiredService<AppDbContext>();
+            logger.LogInformation("--> Verificando banco de dados (Tentativa {0})...", i + 1);
+
+            context.Database.Migrate();
+
+            logger.LogInformation("--> Migrations aplicadas com sucesso!");
+            break; // Sucesso, sai do loop
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning("--> Banco ainda não disponível. Aguardando 5 segundos...");
+            Thread.Sleep(5000); // Aguarda o Postgres "acordar"
+
+            if (i == 4) // Se for a última tentativa e falhar...
+            {
+                logger.LogCritical(ex, "--> Erro fatal ao tentar migrar o banco.");
+                throw;
+            }
+        }
+    }
+}
+// --- FIM DO BLOCO ---
+
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 // --- Middleware Pipeline ---
