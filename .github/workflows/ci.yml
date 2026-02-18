@@ -22,13 +22,13 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Setup NuGet Credentials and Restore
+      - name: Configurar NuGet para GitHub Packages
         run: |
-          # Tentamos atualizar a fonte 'github' caso ela já exista no nuget.config
-          dotnet nuget update source github --username dokatec --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --source "https://nuget.pkg.github.com/dokatec/index.json"
-          dotnet restore
-        env:
-          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          dotnet nuget add source "https://nuget.pkg.github.com/dokatec/index.json" 
+            --name github 
+            --username dokatec 
+            --password ${{ secrets.GITHUB_TOKEN }} 
+            --store-password-in-clear-text
 
       - name: Restore dependencies
         run: dotnet restore FCG-Users.sln
