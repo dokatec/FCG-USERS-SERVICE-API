@@ -19,6 +19,7 @@ jobs:
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
-                  context: .
+                  context: ./FASE_3
+                  file: ./FASE_3/FCG-Users-Service/Dockerfile
                   push: true
                   tags: ${{ secrets.DOCKERHUB_USERNAME }}/fcg-users-api:latest
