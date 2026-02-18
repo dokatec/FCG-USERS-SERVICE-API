@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    # IMPORTANTE: Permissão para ler os pacotes privados
+    # IMPORTANTE: Garanta que o job tenha permissão de leitura para pacotes
     permissions:
       contents: read
       packages: read
@@ -21,14 +21,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9.0.x"
-          # Adicione o link do seu índice de pacotes do GitHub
+          # Adicione esta linha com o seu usuário 'dokatec'
           source-url: https://nuget.pkg.github.com/dokatec/index.json
         env:
-          # Injeta o token automático para o restore funcionar
+          # O GitHub usa este token automático para autenticar no seu NuGet privado
           NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Restore dependencies
-        # O .NET agora usará o NUGET_AUTH_TOKEN definido acima
+        # Agora o restore terá a credencial configurada pelo setup-dotnet acima
         run: dotnet restore
 
       - name: Build
