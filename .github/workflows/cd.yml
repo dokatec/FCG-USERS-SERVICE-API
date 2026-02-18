@@ -19,8 +19,8 @@ jobs:
             - name: Build and push Docker image
               uses: docker/build-push-action@v5
               with:
-                  context: ./FCG-Users-Service
-                  file: ./FCG-Users-Service/Dockerfile
+                  context: .
+                  file: ./Dockerfile
                   push: true
                   # Injeta o token do GitHub como uma variável de build
                   build-args: |
