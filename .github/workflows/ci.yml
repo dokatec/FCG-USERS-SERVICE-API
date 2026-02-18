@@ -1,28 +1,38 @@
 name: CI - FIAP Cloud Games
 
 on:
-    push:
-        branches: [main, develop]
-    pull_request:
-        branches: [main]
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
 
 jobs:
-    build-and-test:
-        runs-on: ubuntu-latest
+  build-and-test:
+    runs-on: ubuntu-latest
+    # IMPORTANTE: Permissão para ler os pacotes privados
+    permissions:
+      contents: read
+      packages: read
 
-        steps:
-            - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-            - name: Setup .NET 9
-              uses: actions/setup-dotnet@v4
-              with:
-                  dotnet-version: "9.0.x"
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+          # Adicione o link do seu índice de pacotes do GitHub
+          source-url: https://nuget.pkg.github.com/dokatec/index.json
+        env:
+          # Injeta o token automático para o restore funcionar
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Restore dependencies
-              run: dotnet restore
+      - name: Restore dependencies
+        # O .NET agora usará o NUGET_AUTH_TOKEN definido acima
+        run: dotnet restore
 
-            - name: Build
-              run: dotnet build --no-restore -c Release
+      - name: Build
+        run: dotnet build --no-restore -c Release
 
-            - name: Test
-              run: dotnet test --no-build -c Release --verbosity normal
+      - name: Test
+        run: dotnet test --no-build -c Release --verbosity normal

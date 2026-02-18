@@ -1,21 +1,26 @@
-# Estágio 1: Build da aplicação
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
-# 1. Copiar o nuget.config para autenticar no GitHub Packages
-# Certifique-se de que este arquivo está na raiz do seu repositório
+# 1. Declara o argumento que receberá o token
+ARG GH_TOKEN
+
+# 2. Copia o nuget.config
 COPY ["nuget.config", "./"]
 
-# 2. Copiar os arquivos de projeto (CSProj) individualmente para aproveitar o Cache do Docker
+# 3. Substitui o placeholder no nuget.config pelo token real antes do restore
+# Isso garante que o dotnet restore tenha a senha correta
+RUN sed -i "s/%GH_TOKEN%/$GH_TOKEN/g" nuget.config
+
+# 4. Copia os arquivos de projeto
 COPY ["src/FCG.Users.API/FCG.Users.API.csproj", "src/FCG.Users.API/"]
 COPY ["src/FCG.Users.Domain/FCG.Users.Domain.csproj", "src/FCG.Users.Domain/"]
 COPY ["src/FCG.Users.Application/FCG.Users.Application.csproj", "src/FCG.Users.Application/"]
 COPY ["src/FCG.Users.Infrastructure/FCG.Users.Infrastructure.csproj", "src/FCG.Users.Infrastructure/"]
 
-# 3. Restore: O .NET agora vai baixar a FCG.Shared do seu GitHub Packages automaticamente
+# 5. Agora o restore terá permissão para baixar a FCG.Shared
 RUN dotnet restore "src/FCG.Users.API/FCG.Users.API.csproj"
 
-# 4. Copiar o restante do código fonte e compilar
+# 6. Copiar o restante do código fonte e compilar
 COPY . .
 WORKDIR "/app/src/FCG.Users.API"
 RUN dotnet build "FCG.Users.API.csproj" -c Release -o /app/build
